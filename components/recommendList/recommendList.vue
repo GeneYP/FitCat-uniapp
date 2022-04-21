@@ -90,12 +90,13 @@
 				// this.pageNum = this.pageNum + 1;
 				setTimeout(() => {
 					this.loadGym(this.status);
+					for (let i = 0; i < 3; i++) {
+						this.recommendList.push({
+					
+						});
+					}
 				}, 5000)
-				for (let i = 0; i < 3; i++) {
-					this.recommendList.push({
-
-					});
-				}
+				
 			},
 			loadGym(resource) {
 				console.log("加载健身房ing：", resource);
