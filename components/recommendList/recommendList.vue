@@ -98,7 +98,7 @@
 				}
 			},
 			loadGym(resource) {
-				console.log(resource);
+				console.log("加载健身房ing：", resource);
 			},
 			longtapList(e) {
 				console.log(e);
