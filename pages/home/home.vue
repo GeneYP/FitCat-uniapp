@@ -60,7 +60,7 @@
 			<recommendList ref="recList"></recommendList>
 		</view>
 		<view class="clazz-list" v-if="curTag==1">
-			课程列表
+			<courseList ref="courseList"></courseList>
 		</view>
 		<view class="plan-list" v-if="curTag==2">
 			计划列表
@@ -143,51 +143,16 @@
 				adSwiperList: [{
 						id: 0,
 						type: 'image',
-						url: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big84000.jpg'
+						url: 'https://cdn.jsdelivr.net/gh/GeneYP/Image-host@main/img/154597789840900.png'
 					},
 					{
 						id: 1,
 						type: 'image',
-						url: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big37006.jpg',
+						url: 'https://cdn.jsdelivr.net/gh/GeneYP/Image-host@main/img/3295523_15985198809595_7a327.png',
 					}, {
 						id: 2,
 						type: 'image',
-						url: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big39000.jpg'
-					}, {
-						id: 3,
-						type: 'image',
-						url: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg'
-					}
-				],
-				gymList: [{
-						id: 0,
-						name: "超鹿健身",
-						rating: 4.5,
-						distance: 1200
-					},
-					{
-						id: 1,
-						name: "康潮健身",
-						rating: 1.9,
-						distance: 80
-					},
-					{
-						id: 2,
-						name: "超你健身",
-						rating: 4.9,
-						distance: 1200
-					},
-					{
-						id: 3,
-						name: "康你健身",
-						rating: 3.9,
-						distance: 800
-					},
-					{
-						id: 4,
-						name: "康喔健身",
-						rating: 2.9,
-						distance: 50
+						url: 'https://cdn.jsdelivr.net/gh/GeneYP/Image-host@main/img/16pic_7875066_b.jpg'
 					}
 				],
 				menuList: [{
@@ -218,18 +183,7 @@
 						name: "计划",
 						checked: false
 					}
-				],
-				dirList: [{
-						name: '关注',
-					},
-					{
-						name: '推荐',
-					},
-					{
-						name: '团课'
-					}
 				]
-
 			}
 		},
 		methods: {
@@ -260,8 +214,15 @@
 				})
 			},
 			// 点击首页菜单
-			clickMenu(name) {
-				this.$refs.uToast.success(`点击了第${name}个`)
+			clickMenu(index) {
+				if(index == 0) {
+					console.log('点击了全国门店');
+				} else if (index == 1) {
+					console.log('点击了训练营');
+				} else if (index == 2) {
+					console.log('点击了资料库');
+				}
+				// this.$refs.uToast.success(`点击了第${index}个`)
 			},
 			// 点击导航tab，绑定Swiper列表
 			clickDir(e) {
@@ -276,30 +237,24 @@
 				});
 				this.curTag = name;
 			},
-			// 绑定导航tab
-			changeDir(e) {
-				// e.detail为获取当前组件属性
-				this.currentDir = e.detail.current;
-				this.changeCompHeight();
-			},
-			// 修改Swiper高度
-			changeCompHeight() {
-				// js选择器，类似于dom
-				let query = uni.createSelectorQuery().in(this);
-				// 选择component
-				query.selectAll(".component").boundingClientRect();
-				// console.log(query.select(".component"))
-				// 修改高度
-				query.exec((res) => {
-					// 根据容器高度修改高度，异步
-					this.swiperHeight = res[0][this.currentDir].height;
-					// 根据调用同步修改高度
-					// this.swiperHeight = height;
-					console.log("Swiper高度：", this.swiperHeight);
-					// console.log(res[0][this.currentDir].height)
-					// console.log(res)
-				});
-			},
+			// // 修改Swiper高度
+			// changeCompHeight() {
+			// 	// js选择器，类似于dom
+			// 	let query = uni.createSelectorQuery().in(this);
+			// 	// 选择component
+			// 	query.selectAll(".component").boundingClientRect();
+			// 	// console.log(query.select(".component"))
+			// 	// 修改高度
+			// 	query.exec((res) => {
+			// 		// 根据容器高度修改高度，异步
+			// 		this.swiperHeight = res[0][this.currentDir].height;
+			// 		// 根据调用同步修改高度
+			// 		// this.swiperHeight = height;
+			// 		console.log("Swiper高度：", this.swiperHeight);
+			// 		// console.log(res[0][this.currentDir].height)
+			// 		// console.log(res)
+			// 	});
+			// },
 
 		},
 		onLoad() {
@@ -326,13 +281,16 @@
 		onReachBottom() {
 			// 调用加载
 			if (this.curTag == 0) {
-				console.log('准备调用推荐加载');
+				console.log('推荐门店加载ing');
 				// 到达底部调用子组件加载更多
 				this.$refs.recList.loadmore();
 				// 不要异步，在loadmore里面做同步处理
 				// this.changeCompHeight();
-			} else if (this.currentDir == 1) {
-				console.log('准备调用推荐加载');
+			} else if (this.curTag == 1) {
+				console.log('推荐团课加载ing');
+				this.$refs.courseList.loadmore();
+			} else if (this.curTag == 2) {
+				console.log('推荐计划加载ing');
 				// this.$refs.recList.loadmore();
 			}
 
@@ -425,6 +383,22 @@
 		box-shadow: 0px 0px 8px #b3b3b3;
 		// margin-top: -50rpx;
 	}
+	
+	.home-menu-img {
+		height: 136rpx;
+		width: 136rpx;
+		margin-top: 16rpx;
+	}
+	
+	.grid-text {
+		font-size: 14px;
+		color: #333333;
+		font-weight: 700;
+		padding: 10rpx 0 20rpx 0rpx;
+		/* #ifndef APP-PLUS */
+		box-sizing: border-box;
+		/* #endif */
+	}
 
 	.home-title {
 		margin: 26rpx 36rpx;
@@ -447,22 +421,7 @@
 		background-image: linear-gradient(#FFFFFFFF, #FFFFFF00);
 	}
 
-	.home-menu-img {
-		height: 136rpx;
-		margin-top: 16rpx;
-	}
-
 	.home-adSwiper {
 		margin: 14rpx 0;
-	}
-
-	.grid-text {
-		font-size: 14px;
-		color: #333333;
-		font-weight: 700;
-		padding: 10rpx 0 20rpx 0rpx;
-		/* #ifndef APP-PLUS */
-		box-sizing: border-box;
-		/* #endif */
 	}
 </style>
