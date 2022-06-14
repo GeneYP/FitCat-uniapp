@@ -5,26 +5,24 @@
 			<uni-nav-bar :fixed="false" color="#333333" background-color="#FFFFFF">
 				<view class="input-view">
 					<uni-icons class="input-uni-icon" type="search" size="18" color="#999" />
-					<input confirm-type="search" class="nav-bar-input" type="text" placeholder="输入搜索关键词"/>
+					<input confirm-type="search" class="nav-bar-input" type="text" placeholder="输入搜索关键词"
+						@confirm="search" />
 				</view>
 			</uni-nav-bar>
 		</u-sticky>
-		<!-- 卡的列表 -->
-		<u-empty v-if="cardList.length == 0" mode="data" icon="http://cdn.uviewui.com/uview/empty/data.png">
-		</u-empty>
-		<view class="home-root" v-for="(food, foodIndex) in foodList" :key="foodIndex">
-			<view class="home-food" @click="showDetail(foodIndex)">
-				<view class="home-food__pic">
-					<image class="food-pic" :src="food.image"></image>
+		<view class="home-root" v-for="(plan, planIndex) in recommendList" :key="plan.id">
+			<view class="home-plan" @click="navToUrl(planIndex)">
+				<view class="home-plan__pic">
+					<image class="plan-pic" :src="plan.img"></image>
 				</view>
-				<view class="home-food__content">
-					<text class="food-name">{{food.name}}</text>
-					<view class="food-info">
-						<text class="food-info__level">
-							过期时间：{{food.time}}
+				<view class="home-plan__content">
+					<text class="plan-name">{{plan.name}}</text>
+					<view class="plan-info">
+						<text class="plan-info__level">
+							{{plan.level <= 1 ? '零基础' : plan.level < 3 ? '初级' : plan.level < 5 ? '中级' : '高级'}}
 						</text>
-						<text class="food-info__level" v-if="food.isExp == 1">
-							（已过期）
+						<text class="plan-info__text" v-for="(tag, tagIdx) in plan.tag" v-if="tagIdx < 3" :key="tagIdx">
+							·&nbsp;{{plan.tag[tagIdx]}}
 						</text>
 					</view>
 				</view>
@@ -37,66 +35,59 @@
 	export default {
 		data() {
 			return {
-				foodList: []
-			}
+				defaultIcon: 'https://cdn.jsdelivr.net/gh/GeneYP/Image-host@main/img/9CACD21541F975EA560D37BF99493CD3.jpg',
+				recommendList: [{
+						id: 0,
+						name: "瘦子增重 上半身增肌计划",
+						level: 2,
+						img: 'https://cdn.jsdelivr.net/gh/GeneYP/Image-host@main/img/8C4A69E91EB043E8BD6994054341C0B7.jpg',
+						url: 'https://zhuanlan.zhihu.com/p/72035758',
+						tag: ['增肌', '力量提升']
+					},
+					{
+						id: 1,
+						name: "告别肚腩 高效减脂计划",
+						level: 5,
+						img: 'https://cdn.jsdelivr.net/gh/GeneYP/Image-host@main/img/0C15599CE6EECA07967DA545DCE43989.jpg',
+						url: 'https://zhuanlan.zhihu.com/p/412235330',
+						tag: ['减脂']
+					},
+					{
+						id: 2,
+						name: "体态纠正 告别弯腰驼背",
+						level: 1,
+						img: 'https://cdn.jsdelivr.net/gh/GeneYP/Image-host@main/img/22625E86F8C5D78976E06D43CF7D5B28.jpg',
+						url: 'https://zhuanlan.zhihu.com/p/457394165',
+						tag: ['拉伸', '体态纠正']
+					},
+				]
+			};
 		},
 		methods: {
-			showDetail(id){
-				// console.log('打印', this.foodList[id].name)
+			search(e) {
+				console.log(e.target.value);
+			},
+			loadPlan(resource) {
+				console.log("课程加载中ing：", resource);
+			},
+			navToUrl(index) {
 				uni.navigateTo({
-					url: '../../pages/gymDetail/gymDetail?gymId=' + this.foodList[id].gymId
+					url: "../../pages/webView/webView?url=" + this.recommendList[index].url
 				})
-			},
-			loadCard() {
-				this.foodList = [];
-				console.log("会员卡加载中……");
-				var userId = uni.getStorageSync("userId");
-				this.$request.request({
-					url: 'user/card/' + userId,
-					method: 'GET',
-				}).then(res => {
-					var res1 = res;
-					for (let i = 0; i < res.data.length; i++) {
-						// console.log("------data------", expireTime);
-						this.$request.request({
-							url: 'gym/detail/' + res1.data[i].gymId,
-							method: 'GET',
-						}).then(res => {
-							console.log(res.data)
-							var expireTime = res1.data[i].expire.substr(0, 10);
-							var gymName = res.data.gymName;
-							var gymImg = res.data.pic;
-							let today = new Date();
-							let cardTime = new Date(expireTime);
-							console.log(cardTime)
-							var isExpire = 0;
-							if (cardTime <= today) {
-								isExpire = 1;
-								// console.log('过期了')
-							}
-							this.foodList.push({
-								id: res1.data[i].id,
-								name: gymName,
-								image: gymImg,
-								time: expireTime,
-								isExp: isExpire,
-								gymId: res1.data[i].gymId
-							})
-						})
-					};
-				})
-			},
+			}
 		},
-		onShow() {
-			this.loadCard();
-			console.log(this.foodList)
-		}
 	}
 </script>
 
 <style lang="scss">
 	$nav-height: 30px;
 
+	/* #ifndef APP-NVUE */
+	page {
+		height: 120%;
+	}
+
+	/* #endif */
 	.uni-nav-bar-text {
 		white-space: nowrap;
 		font-size: 28rpx;
@@ -135,7 +126,7 @@
 		background-color: #f8f8f8;
 	}
 
-	.home-food {
+	.home-plan {
 		height: 260rpx;
 		background-color: #000000;
 		border-radius: 20rpx;
@@ -166,7 +157,7 @@
 		}
 	}
 
-	.food-pic {
+	.plan-pic {
 		position: absolute;
 		left: 50%;
 		top: 50%;
@@ -176,7 +167,7 @@
 		transform: scale(1.2) translate(-50%, -50%);
 	}
 
-	.food-name {
+	.plan-name {
 		font-size: 42rpx;
 		color: #FFFFFF;
 		font-weight: 700;
@@ -188,7 +179,7 @@
 		text-overflow: ellipsis;
 	}
 
-	.food-info {
+	.plan-info {
 		display: flex;
 		margin-top: 10rpx;
 

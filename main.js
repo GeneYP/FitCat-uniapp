@@ -1,4 +1,6 @@
 import App from './App'
+import request from './util/request.js'
+// import baseUrl from './util/config.js'
 
 import favorite from './pages/favorite/favorite.vue'
 Vue.component('favorite',favorite)
@@ -17,7 +19,15 @@ Vue.component('fitmap',fitmap)
 
 // #ifndef VUE3
 import Vue from 'vue'
+// import http from './common/request.js'
+
 Vue.config.productionTip = false
+
+// Vue.prototype.$urls = "";	//线上url接口
+// Vue.prototype.$http = http;
+
+Vue.prototype.$request = request;
+
 App.mpType = 'app'
 const app = new Vue({
     ...App

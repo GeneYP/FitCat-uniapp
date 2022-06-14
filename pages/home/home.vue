@@ -3,31 +3,27 @@
 		<!-- 顶部查找 -->
 		<u-sticky>
 			<uni-nav-bar :fixed="false" color="#333333" background-color="#FFFFFF">
-				<block slot="left">
-					<view class="city" @tap="selectCityPage">
-						<view>
-							<text class="uni-nav-bar-text">{{selectCity}}</text>
-						</view>
-						<uni-icons type="arrowdown" color="#333333" size="20" />
+				<!-- <block slot="left"> -->
+				<view class="city" @tap="selectCityPage">
+					<view>
+						<text class="uni-nav-bar-text">{{selectCity}}</text>
 					</view>
-				</block>
+					<uni-icons type="arrowdown" color="#333333" size="20" />
+				</view>
+				<!-- </block> -->
 				<view class="input-view">
 					<uni-icons class="input-uni-icon" type="search" size="18" color="#999" />
 					<!-- @tap="doSearch" /> -->
-					<input confirm-type="search" class="nav-bar-input" type="text" placeholder="输入搜索关键词" />
-					<!-- @confirm="doSearch" /> -->
+					<input confirm-type="search" class="nav-bar-input" type="text" placeholder="输入搜索关键词"
+						@confirm="doSearch" />
 				</view>
-				<block slot="right">
-					<!-- <button class="cu-btn round bg-yellow search-btn">搜索</button> -->
-					<button class="search-btn">搜索</button>
-				</block>
 			</uni-nav-bar>
 		</u-sticky>
 
 		<!-- 健身房公告轮播图 -->
 		<view class="home-adSwiper">
 			<u-swiper :list="adSwiperList" previousMargin="24" nextMargin="24" circular :autoplay="true" radius="5"
-				bgColor="#ffffff00" height="170"></u-swiper>
+				bgColor="#ffffff00" height="170" @click="clickAD"></u-swiper>
 		</view>
 
 		<!-- 首页菜单 -->
@@ -63,70 +59,9 @@
 			<courseList ref="courseList"></courseList>
 		</view>
 		<view class="plan-list" v-if="curTag==2">
-			计划列表
+			<planList ref="planList"></planList>
 		</view>
 
-		<!-- 健身房列表导航栏 -->
-		<!-- <view class="home-dir"> -->
-		<!-- <u-tabs :list="dirList" lineWidth="30" lineColor="#ffcc33" :current="currentDir" -->
-		<!-- :activeStyle="{color: '#000000', fontWeight: 'bold', transform: 'scale(1.05)'}" -->
-		<!-- :inactiveStyle="{color: '#606266', transform: 'scale(1)'}" -->
-		<!-- itemStyle="padding-left: 30rpx; padding-right: 30rpx; height: 80rpx;" @click="clickDir"></u-tabs> -->
-		<!-- </view> -->
-		<!-- 健身房列表（收起） -->
-		<!-- <swiper class="home-list-swiper" :circular="false" :autoplay="false" duration="100" :current="currentSwiper" -->
-		<!-- @change="changeDir" :style="{'height': swiperHeight + 'rpx'}"> -->
-		<!-- <swiper-item class="follow-list"> -->
-		<!-- TODO 改成scrollview实现，把这块的swiper固定高度放手机上滑一下试试 -->
-		<!-- <subscribeList class="component" ref="subList"></subscribeList> -->
-		<!-- </swiper-item> -->
-		<!-- <swiper-item class="recommend-list"> -->
-		<!-- <recommendList class="component" ref="recList"></recommendList> -->
-		<!-- </swiper-item> -->
-		<!-- <swiper-item class="clazz-list"> -->
-		<!-- 团课列表 -->
-		<!-- </swiper-item> -->
-		<!-- </swiper> -->
-
-		<!-- <u-swipe-action class="home-gym-list">
-			<u-swipe-action-item v-for="(gym, gymIndex) in recommendList" :key="gym.id" :options="optionsList">
-				<view class="swipe-action u-border-bottom home-gym-item">
-					<view class="swipe-action__content" @longtap="longtapList">
-						<view class="swipe-action__content__pic">
-							<image class="gym-pic" :src="gym.url"></image>
-						</view>
-						<view class="swipe-action__content__text">
-							<text class="gym-name">{{gym.name}}</text>
-							<text class="gym-rating">{{gym.rating}}</text>
-							<text class="gym-distance">{{gym.distance}}</text>
-						</view>
-
-					</view>
-				</view>
-			</u-swipe-action-item>
-		</u-swipe-action> -->
-		<!-- 猜你喜欢放在上面列表的第一个 -->
-		<!-- 健身房列表
-		<u-swipe-action>
-			<u-swipe-action-item v-for="(gym, gymIndex) in gymList" :key="gym.id" :options="optionsList">
-				<view class="swipe-action u-border-bottom">
-					<view class="swipe-action__content">
-						<text class="swipe-action__content__text">{{gym.name}}</text>
-						</br>
-						<text class="swipe-action__content__text">{{gym.rating}}</text>
-
-						<text class="swipe-action__content__text">{{gym.distance}}</text>
-					</view>
-				</view>
-			</u-swipe-action-item>
-			<u-swipe-action-item :options="optionsList">
-				<view class="swipe-action u-border-top u-border-bottom">
-					<view class="swipe-action__content">
-						<text class="swipe-action__content__text">第二个</text>
-					</view>
-				</view>
-			</u-swipe-action-item>
-		</u-swipe-action> -->
 	</view>
 </template>
 
@@ -135,25 +70,33 @@
 		name: "home",
 		data() {
 			return {
+				pos: [{
+					latitude: 21.1508,
+					longitude: 110.3011,
+					city: '获取失败'
+				}],
 				selectCity: '获取失败',
 				currentSwiper: 0,
 				currentDir: 0,
 				curTag: 0,
 				swiperHeight: '500',
-				adSwiperList: [{
-						id: 0,
-						type: 'image',
-						url: 'https://cdn.jsdelivr.net/gh/GeneYP/Image-host@main/img/154597789840900.png'
-					},
-					{
-						id: 1,
-						type: 'image',
-						url: 'https://cdn.jsdelivr.net/gh/GeneYP/Image-host@main/img/3295523_15985198809595_7a327.png',
-					}, {
-						id: 2,
-						type: 'image',
-						url: 'https://cdn.jsdelivr.net/gh/GeneYP/Image-host@main/img/16pic_7875066_b.jpg'
-					}
+				adSwiperList: [
+					// {
+					// 	id: 0,
+					// 	type: 'image',
+					// 	url: 'https://cdn.jsdelivr.net/gh/GeneYP/Image-host@main/img/154597789840900.png',
+					// 	// name: '健身季',
+					// 	gym: '../allGym/allGym'
+					// },
+					// {
+					// 	id: 1,
+					// 	type: 'image',
+					// 	url: 'https://cdn.jsdelivr.net/gh/GeneYP/Image-host@main/img/3295523_15985198809595_7a327.png',
+					// }, {
+					// 	id: 2,
+					// 	type: 'image',
+					// 	url: 'https://cdn.jsdelivr.net/gh/GeneYP/Image-host@main/img/16pic_7875066_b.jpg'
+					// }
 				],
 				menuList: [{
 						title: '全国门店',
@@ -202,6 +145,11 @@
 							success: data => {
 								// console.log(data);
 								this.selectCity = data.data.result.address_component.city;
+								this.pos[0].latitude = res.latitude;
+								this.pos[0].longitude = res.longitude;
+								this.pos[0].city = data.data.result.address_component.city;
+								uni.setStorageSync('lati', res.latitude);
+								uni.setStorageSync('longti', res.longitude);
 							}
 						});
 					}
@@ -215,12 +163,24 @@
 			},
 			// 点击首页菜单
 			clickMenu(index) {
-				if(index == 0) {
+				var that = this;
+				var navData = JSON.stringify(that.pos);
+				console.log('navData: ', navData);
+				if (index == 0) {
 					console.log('点击了全国门店');
+					uni.navigateTo({
+						url: "../allGym/allGym?position=" + navData
+					})
 				} else if (index == 1) {
 					console.log('点击了训练营');
+					uni.navigateTo({
+						url: "../trainCamp/trainCamp"
+					})
 				} else if (index == 2) {
 					console.log('点击了资料库');
+					uni.navigateTo({
+						url: "../dataBank/dataBank"
+					})
 				}
 				// this.$refs.uToast.success(`点击了第${index}个`)
 			},
@@ -237,25 +197,19 @@
 				});
 				this.curTag = name;
 			},
-			// // 修改Swiper高度
-			// changeCompHeight() {
-			// 	// js选择器，类似于dom
-			// 	let query = uni.createSelectorQuery().in(this);
-			// 	// 选择component
-			// 	query.selectAll(".component").boundingClientRect();
-			// 	// console.log(query.select(".component"))
-			// 	// 修改高度
-			// 	query.exec((res) => {
-			// 		// 根据容器高度修改高度，异步
-			// 		this.swiperHeight = res[0][this.currentDir].height;
-			// 		// 根据调用同步修改高度
-			// 		// this.swiperHeight = height;
-			// 		console.log("Swiper高度：", this.swiperHeight);
-			// 		// console.log(res[0][this.currentDir].height)
-			// 		// console.log(res)
-			// 	});
-			// },
-
+			clickAD(index) {
+				// console.log('点击了,第张广告', index)
+				// console.log('这个会跳转到', this.adSwiperList[index].gym)
+				uni.navigateTo({
+					url: this.adSwiperList[index].gym
+				})
+			},
+			doSearch(e) {
+				console.log('输入了', e.target.value);
+				uni.navigateTo({
+					url: "../allGym/allGym?search=" + e.target.value
+				})
+			}
 		},
 		onLoad() {
 			// 判断城市数据,如果没有,就重新请求一次.
@@ -267,6 +221,22 @@
 			// 抓取活动
 			// TODO：？
 			// this.changeCompHeight();
+			this.$request.request({
+				url: '/active/all',
+				method: 'GET',
+			}).then(res => {
+				for (let i = 0; i < res.data.length; i++) {
+					this.adSwiperList.push({
+						id: i,
+						type: 'image',
+						url: res.data[i].img,
+						gym: '../gymDetail/gymDetail?gymId=' + res.data[i].gymId
+					});
+				}
+				// this.adSwiperList[res.data[0].position].url = res.data[0].img;
+				console.log("------data------", res.data[0].img);
+			})
+			
 		},
 		onShow() {
 			const selectCity = uni.getStorageSync('selectCity');
@@ -288,7 +258,7 @@
 				// this.changeCompHeight();
 			} else if (this.curTag == 1) {
 				console.log('推荐团课加载ing');
-				this.$refs.courseList.loadmore();
+				// this.$refs.courseList.loadmore(1677307);
 			} else if (this.curTag == 2) {
 				console.log('推荐计划加载ing');
 				// this.$refs.recList.loadmore();
@@ -296,10 +266,12 @@
 
 		},
 		onPullDownRefresh() {
-			console.log('onPullDownRefresh')
+			// console.log('onPullDownRefresh')
+			var that = this;
+			this.$refs.recList.loadmore();
 			setTimeout(function() {
-				uni.stopPullDownRefresh()
-				console.log('stopPullDownRefresh')
+				uni.stopPullDownRefresh();
+				// console.log('stopPullDownRefresh')
 			}, 1000)
 		}
 	}
@@ -336,7 +308,7 @@
 		display: flex;
 		/* #endif */
 		flex-direction: row;
-		// width: 500rpx;
+		width: 500rpx;
 		flex: 1;
 		background-color: #f8f8f8;
 		height: $nav-height;
@@ -356,40 +328,14 @@
 		height: $nav-height;
 		line-height: $nav-height;
 		/* #ifdef APP-PLUS-NVUE */
-		width: 370rpx;
+		width: 100%;
 		/* #endif */
+		width: 100%;
 		padding: 0 5px;
 		font-size: 14px;
 		background-color: #f8f8f8;
 	}
 
-	.search-btn {
-		margin-left: 18rpx;
-		white-space: nowrap;
-		height: 60rpx;
-		border-radius: 28rpx;
-		text-align: center;
-		font-size: 28rpx;
-		background-color: #ffcc33;
-	}
-
-	.home-menu {
-		background-color: #FFFFFF;
-		width: 92%;
-		margin: 40rpx 4%;
-		border-radius: 16rpx;
-		-moz-box-shadow: 0px 0px 8px #b3b3b3;
-		-webkit-box-shadow: 0px 0px 8px #b3b3b3;
-		box-shadow: 0px 0px 8px #b3b3b3;
-		// margin-top: -50rpx;
-	}
-	
-	.home-menu-img {
-		height: 136rpx;
-		width: 136rpx;
-		margin-top: 16rpx;
-	}
-	
 	.grid-text {
 		font-size: 14px;
 		color: #333333;
@@ -415,10 +361,6 @@
 
 	.home-tag {
 		margin: 20rpx 24rpx 0rpx 12rpx;
-	}
-
-	.home-dir {
-		background-image: linear-gradient(#FFFFFFFF, #FFFFFF00);
 	}
 
 	.home-adSwiper {

@@ -67,9 +67,9 @@
 							}
 						});
 						that.MapData(that, data)
+						// uni.moveToLocation(latitude, longitude)
 					}
 				})
-				
 			},
 			//地图数据初始化
 			MapData(that, data) {

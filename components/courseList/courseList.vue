@@ -1,5 +1,8 @@
 <template>
 	<view>
+		<!-- <u-empty v-if="recommendList.length == 0" mode="data" icon="http://cdn.uviewui.com/uview/empty/data.png">
+		</u-empty> -->
+		<u-divider text="暂无团课" v-if="recommendList.length == 0"></u-divider>
 		<view class="home-root" v-for="(course, courseIndex) in recommendList" :key="course.id">
 			<view class="home-course">
 				<view class="home-course__content" @longpress="longtapList(courseIndex)">
@@ -14,7 +17,7 @@
 								{{course.level <= 1 ? '零基础' : course.level < 3 ? '新手推荐' : course.level < 5 ? '强化训练' : '高手进阶'}}
 							</text>
 							<u-rate activeIcon="heart-fill" inactiveIcon="heart" :value="course.level" readonly
-								:activeColor="course.level < 2 ? 'primary' : course.level < 4 ? 'warning' : 'error'">
+								:activeColor="course.level < 2 ? 'primary' : course.level < 4 ? 'success' : 'error'">
 							</u-rate>
 						</view>
 						<view class="course-detail">
@@ -25,9 +28,8 @@
 								</text>
 							</text>
 							<view class="course-detail__taglist">
-								<view class="course-detail__tag" v-for="(tag, tagIdx) in course.tag" v-if="tagIdx < 3"
-									:key="tagIdx">
-									<u-tag :text="course.tag[tagIdx]" type="primary" size="mini" plain plainFill>
+								<view class="course-detail__tag">
+									<u-tag :text="course.tag" type="primary" size="mini" plain plainFill>
 									</u-tag>
 								</view>
 							</view>
@@ -35,6 +37,7 @@
 					</view>
 				</view>
 			</view>
+			<!-- 长按遮罩层 -->
 			<view class="course-mask" v-if="maskFlag == courseIndex" @click="maskFlag=-1">
 				<button class="course-mask__hate" @click="clickHate(courseIndex)">
 					<u-icon name="trash-fill" color="#0f80ff" size="30"></u-icon>
@@ -45,7 +48,7 @@
 			</view>
 		</view>
 		<u-loadmore :status="status" :loading-text="loadingText" :loadmore-text="loadmoreText"
-			:nomore-text="nomoreText" />
+			:nomore-text="nomoreText" @loadmore="loadmore"/>
 	</view>
 </template>
 
@@ -60,63 +63,75 @@
 				nomoreText: '别看了，已经没有了',
 				maskFlag: -1,
 				defaultIcon: 'https://cdn.jsdelivr.net/gh/GeneYP/Image-host@main/img/logo.png',
-				recommendList: [{
-						id: 0,
-						name: "Body Pump 哑铃塑形",
-						teacher: '高老师',
-						level: 2,
-						head: 'https://cdn.jsdelivr.net/gh/GeneYP/Image-host@main/img/f1a10e0d8fd308e9529250c9d49bf911.jpg',
-						cost: 16,
-						time: '10:00-11:00',
-						tag: ['全面训练', '体能提升']
-					},
-					{
-						id: 1,
-						name: "Zumba 南美燃脂舞",
-						teacher: '许玄明',
-						level: 4,
-						head: 'https://cdn.jsdelivr.net/gh/GeneYP/Image-host@main/img/eh3WDaS9iFEJmh5YM4T.jpg',
-						cost: 16,
-						time: '10:00-11:00',
-						tag: ['波比跳', '体能提升']
-					},
-					{
-						id: 2,
-						name: "休闲拉伸课",
-						teacher: '张晓明',
-						level: 1,
-						head: 'https://cdn.jsdelivr.net/gh/GeneYP/Image-host@main/img/f1a10e0d8fd308e9529250c9d49bf911.jpg',
-						cost: 16,
-						time: '10:00-11:00',
-						tag: []
-					},
-					{
-						id: 3,
-						name: "BUMP 燃脂单车",
-						teacher: '许无',
-						level: 5,
-						head: 'https://cdn.jsdelivr.net/gh/GeneYP/Image-host@main/img/eh3WDaS9iFEJmh5YM4T.jpg',
-						cost: 16,
-						time: '10:00-11:00',
-						tag: ['全面训练', '体能提升', '增肌', '减脂塑形']
-					},
+				recommendList: [
+					// {
+					// 	id: 0,
+					// 	name: "Body Pump 哑铃塑形",
+					// 	teacher: '高老师',
+					// 	level: 2,
+					// 	head: 'https://cdn.jsdelivr.net/gh/GeneYP/Image-host@main/img/f1a10e0d8fd308e9529250c9d49bf911.jpg',
+					// 	cost: 16,
+					// 	time: '10:00-11:00',
+					// 	tag: ['全面训练', '体能提升']
+					// },
+					// {
+					// 	id: 1,
+					// 	name: "Zumba 南美燃脂舞",
+					// 	teacher: '许玄明',
+					// 	level: 4,
+					// 	head: 'https://cdn.jsdelivr.net/gh/GeneYP/Image-host@main/img/eh3WDaS9iFEJmh5YM4T.jpg',
+					// 	cost: 16,
+					// 	time: '10:00-11:00',
+					// 	tag: ['波比跳', '体能提升']
+					// },
+					// {
+					// 	id: 2,
+					// 	name: "休闲拉伸课",
+					// 	teacher: '张晓明',
+					// 	level: 1,
+					// 	head: 'https://cdn.jsdelivr.net/gh/GeneYP/Image-host@main/img/f1a10e0d8fd308e9529250c9d49bf911.jpg',
+					// 	cost: 16,
+					// 	time: '10:00-11:00',
+					// 	tag: []
+					// },
+					// {
+					// 	id: 3,
+					// 	name: "BUMP 燃脂单车",
+					// 	teacher: '许无',
+					// 	level: 5,
+					// 	head: 'https://cdn.jsdelivr.net/gh/GeneYP/Image-host@main/img/eh3WDaS9iFEJmh5YM4T.jpg',
+					// 	cost: 16,
+					// 	time: '10:00-11:00',
+					// 	tag: ['全面训练', '体能提升', '增肌', '减脂塑形']
+					// },
 				]
 			};
 		},
 		methods: {
-			loadmore() {
+			loadmore(gymId) {
 				this.status = 'loading';
 				console.log('rec.loadmore被调用');
-				// 调用加载数据的函数
-				// this.pageNum = this.pageNum + 1;
-				setTimeout(() => {
-					this.loadCourse(this.status);
-					for (let i = 0; i < 3; i++) {
+				this.$request.request({
+					url: 'gym/session/' + gymId,
+					method: 'GET',
+				}).then(res => {
+					// var gymTag = new Array(2);
+					for (let i = 0; i < res.data.length; i++) {
+						console.log(res.data[i]);
+						var courseDate = '2022年6月' + (i + 15) + '日';
 						this.recommendList.push({
-
-						});
-					}
-				}, 5000)
+							id: res.data[i].id,
+							name: res.data[i].name,
+							teacher: '线下课',
+							level: res.data[i].level,
+							head: res.data[i].img,
+							cost: 30 + Math.round(Math.random() * (9 - 2)) + 2,
+							tag: res.data[i].tag,
+							time: courseDate,
+						})
+					};
+				});
+				this.status = 'nomore';
 
 			},
 			loadCourse(resource) {
@@ -131,12 +146,30 @@
 			},
 			clickHate(course) {
 				console.log("hate", course);
+				this.recommendList.splice(course, 1);
+				var uid = uni.getStorageSync('userId');
+				if(uid == 10000005){
+					uni.setStorageSync('userId', 30031781);
+					console.log("帮你cut掉单车");
+				} else if(uid == 30031781) {
+					uni.setStorageSync('userId', 10000005);
+				}
 			}
 		},
 		created() {
 			//抓取活动
 			// this.loadmore()
 			console.log('展示了个寂寞？');
+			if(this.recommendList.length == 0) {
+				var uid = uni.getStorageSync('userId');
+				if(uid == 10000005){
+					this.loadmore(1677307);
+					console.log("帮你cut掉单车");
+				} else if(uid == 30031781) {
+					this.loadmore(32450322);
+				}
+				// this.loadmore(1677307);
+			}
 		},
 		// onReachBottom() {
 		// 	this.loadmore();
@@ -145,10 +178,6 @@
 </script>
 
 <style lang="scss" scoped>
-	.home-root {
-		position: relative;
-	}
-
 	.home-course {
 		height: 260rpx;
 		background-color: #FFFFFF;
